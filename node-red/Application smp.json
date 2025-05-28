@@ -1,0 +1,341 @@
+[
+    {
+        "id": "67c505b1de210de4",
+        "type": "tab",
+        "label": "Flux 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "680f44f3086ec62a",
+        "type": "ui_template",
+        "z": "67c505b1de210de4",
+        "group": "e345783a28555e88",
+        "name": "",
+        "order": 0,
+        "width": "6",
+        "height": "11",
+        "format": "<!DOCTYPE html>\n<html lang=\"fr\">\n\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <title>Smart Parking - Connexion / Inscription</title>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      background-color: #f2f2f2;\n      margin: 0;\n      padding: 0;\n    }\n\n    .container {\n      max-width: 400px;\n      margin: 40px auto;\n      padding: 20px;\n      background-color: white;\n      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);\n      border-radius: 8px;\n    }\n\n    h2,\n    h3 {\n      text-align: center;\n      margin-bottom: 20px;\n      color: #333;\n    }\n\n    label {\n      display: block;\n      margin: 12px 0 6px;\n      color: #555;\n    }\n\n    input[type=\"text\"],\n    input[type=\"email\"],\n    input[type=\"password\"] {\n      width: 100%;\n      padding: 8px;\n      box-sizing: border-box;\n      border-radius: 4px;\n      border: 1px solid #ccc;\n    }\n\n    button {\n      width: 100%;\n      margin-top: 20px;\n      padding: 10px;\n      background-color: #007bff;\n      border: none;\n      color: white;\n      font-size: 16px;\n      border-radius: 5px;\n      cursor: pointer;\n    }\n\n    button:hover {\n      background-color: #0056b3;\n    }\n\n    .link-btn {\n      background: none;\n      border: none;\n      color: #007bff;\n      cursor: pointer;\n      text-align: center;\n      padding: 0;\n      margin-top: 10px;\n      font-size: 14px;\n    }\n\n    .link-btn:hover {\n      text-decoration: underline;\n    }\n\n    .message {\n      color: red;\n      margin-top: 10px;\n      text-align: center;\n      min-height: 18px;\n    }\n\n    /* Parking widget */\n    .parking-container {\n      display: flex;\n      gap: 10px;\n      justify-content: center;\n      margin: 20px auto;\n      flex-wrap: wrap;\n      max-width: 400px;\n    }\n\n    .parking-slot {\n      width: 100px;\n      height: 100px;\n      display: flex;\n      flex-direction: column;\n      justify-content: center;\n      align-items: center;\n      font-weight: bold;\n      font-size: 16px;\n      border-radius: 10px;\n      border: 2px solid black;\n      padding: 10px;\n      user-select: none;\n      text-align: center;\n    }\n\n    .available {\n      background-color: green;\n      color: white;\n    }\n\n    .reserved {\n      background-color: red;\n      color: white;\n    }\n\n    .slot-box {\n      width: 90px;\n      height: 60px;\n      line-height: 60px;\n      border: 2px solid #ccc;\n      border-radius: 10px;\n      font-weight: bold;\n      font-size: 14px;\n      user-select: none;\n      cursor: pointer;\n      margin-bottom: 5px;\n    }\n  </style>\n</head>\n\n<body>\n\n  <!-- État du parking -->\n  <div>\n    <h3>État en temps réel du parking</h3>\n    <div class=\"parking-container\" id=\"parkingStatus\"></div>\n  </div>\n\n  <!-- Connexion -->\n  <div class=\"container\" id=\"loginPage\">\n    <h2>Connexion</h2>\n    <label for=\"username\">Nom d'utilisateur</label>\n    <input type=\"text\" id=\"username\" />\n    <label for=\"password\">Mot de passe</label>\n    <input type=\"password\" id=\"password\" />\n    <button onclick=\"login()\">Se connecter</button>\n    <button class=\"link-btn\" onclick=\"showSignup()\">S'inscrire</button>\n    <div class=\"message\" id=\"loginMessage\"></div>\n  </div>\n\n  <!-- Inscription -->\n  <div class=\"container\" id=\"signupPage\" style=\"display:none;\">\n    <h2>Inscription</h2>\n    <label for=\"newUsername\">Nom d'utilisateur</label>\n    <input type=\"text\" id=\"newUsername\" />\n    <label for=\"email\">Email</label>\n    <input type=\"email\" id=\"email\" />\n    <label for=\"cardId\">ID de carte</label>\n    <input type=\"text\" id=\"cardId\" />\n    <label>Matricule de voiture</label>\n    <div style=\"display: flex; gap: 5px;\">\n      <input type=\"text\" id=\"matriculeStart\" maxlength=\"3\" placeholder=\"123\" style=\"flex:1;\" />\n      <div style=\"align-self: center;\">تونس</div>\n      <input type=\"text\" id=\"matriculeEnd\" maxlength=\"4\" placeholder=\"4567\" style=\"flex:1;\" />\n    </div>\n    <label for=\"newPassword\">Mot de passe</label>\n    <input type=\"password\" id=\"newPassword\" />\n    <label for=\"confirmPassword\">Confirmer le mot de passe</label>\n    <input type=\"password\" id=\"confirmPassword\" />\n    <button onclick=\"signup()\">S'inscrire</button>\n    <button class=\"link-btn\" onclick=\"showLogin()\">Se connecter</button>\n    <div class=\"message\" id=\"signupMessage\"></div>\n  </div>\n\n  <!-- Réservation -->\n  <div class=\"container\" id=\"reservationPage\" style=\"display:none;\">\n    <h2>Réservation de Parking</h2>\n    <div style=\"display:flex; justify-content:center; gap: 10px;\">\n      <div style=\"text-align:center;\">\n        <div class=\"slot-box\" id=\"slot1\">Place 1</div>\n        <button onclick=\"reserveSlot(1)\" id=\"reserve1\">Réserver</button>\n        <button onclick=\"releaseSlot(1)\" id=\"release1\" style=\"display:none;\">Libérer</button>\n      </div>\n      <div style=\"text-align:center;\">\n        <div class=\"slot-box\" id=\"slot2\">Place 2</div>\n        <button onclick=\"reserveSlot(2)\" id=\"reserve2\">Réserver</button>\n        <button onclick=\"releaseSlot(2)\" id=\"release2\" style=\"display:none;\">Libérer</button>\n      </div>\n      <div style=\"text-align:center;\">\n        <div class=\"slot-box\" id=\"slot3\">Place 3</div>\n        <button onclick=\"reserveSlot(3)\" id=\"reserve3\">Réserver</button>\n        <button onclick=\"releaseSlot(3)\" id=\"release3\" style=\"display:none;\">Libérer</button>\n      </div>\n    </div>\n    <button onclick=\"logout()\" style=\"margin-top: 20px; background-color:#dc3545;\">Se déconnecter</button>\n  </div>\n\n  <script>\n    const slots = [false, false, false];\n    const reservedBy = [null, null, null];\n    let users = {};  // username: { password, matricule }\n    let currentUser = null;\n    const userMatricules = {};\n\n    function renderParkingStatus() {\n      const container = document.getElementById('parkingStatus');\n      container.innerHTML = '';\n      for (let i = 0; i < slots.length; i++) {\n        const div = document.createElement('div');\n        div.className = 'parking-slot ' + (slots[i] ? 'reserved' : 'available');\n        div.textContent = slots[i] && reservedBy[i] ? userMatricules[reservedBy[i]] : `Place ${i + 1}`;\n        container.appendChild(div);\n      }\n    }\n\n    function updateReservationDisplay() {\n      for (let i = 1; i <= slots.length; i++) {\n        const slotDiv = document.getElementById('slot' + i);\n        const reserveBtn = document.getElementById('reserve' + i);\n        const releaseBtn = document.getElementById('release' + i);\n\n        if (slots[i - 1]) {\n          slotDiv.style.backgroundColor = 'red';\n          slotDiv.style.color = 'white';\n          const reserver = reservedBy[i - 1];\n          slotDiv.textContent = userMatricules[reserver] || 'Réservé';\n          if (reserver === currentUser) {\n            releaseBtn.style.display = 'inline-block';\n          } else {\n            releaseBtn.style.display = 'none';\n          }\n          reserveBtn.style.display = 'none';\n        } else {\n          slotDiv.style.backgroundColor = '#fff';\n          slotDiv.style.color = '#000';\n          slotDiv.textContent = 'Place ' + i;\n          reserveBtn.style.display = 'inline-block';\n          releaseBtn.style.display = 'none';\n        }\n      }\n    }\n\n    function updateAllDisplays() {\n      renderParkingStatus();\n      updateReservationDisplay();\n    }\n\n    function showPage(id) {\n      ['loginPage', 'signupPage', 'reservationPage'].forEach(pid => {\n        document.getElementById(pid).style.display = pid === id ? 'block' : 'none';\n      });\n      clearMessages();\n    }\n\n    function showLogin() { showPage('loginPage'); }\n    function showSignup() { showPage('signupPage'); }\n    function showReservation() { showPage('reservationPage'); updateAllDisplays(); }\n\n    function clearMessages() {\n      document.getElementById('loginMessage').textContent = '';\n      document.getElementById('signupMessage').textContent = '';\n    }\n\n    function login() {\n      const username = document.getElementById('username').value.trim();\n      const password = document.getElementById('password').value.trim();\n      if (!users[username] || users[username].password !== password) {\n        document.getElementById('loginMessage').textContent = 'Nom d\\'utilisateur ou mot de passe incorrect.';\n        return;\n      }\n      currentUser = username;\n      showReservation();\n    }\n\n    function signup() {\n      const username = document.getElementById('newUsername').value.trim();\n      const email = document.getElementById('email').value.trim();\n      const cardId = document.getElementById('cardId').value.trim();\n      const matStart = document.getElementById('matriculeStart').value.trim();\n      const matEnd = document.getElementById('matriculeEnd').value.trim();\n      const password = document.getElementById('newPassword').value;\n      const confirmPassword = document.getElementById('confirmPassword').value;\n\n      if (!username || !email || !cardId || !matStart || !matEnd || !password || !confirmPassword) {\n        document.getElementById('signupMessage').textContent = 'Veuillez remplir tous les champs.';\n        return;\n      }\n      if (!/^\\d{3}$/.test(matStart) || !/^\\d{4}$/.test(matEnd)) {\n        document.getElementById('signupMessage').textContent = 'Format du matricule incorrect.';\n        return;\n      }\n      if (password !== confirmPassword) {\n        document.getElementById('signupMessage').textContent = 'Les mots de passe ne correspondent pas.';\n        return;\n      }\n\n      users[username] = { password };\n      userMatricules[username] = `${matStart} تونس ${matEnd}`;\n      alert('Inscription réussie !');\n      showLogin();\n    }\n\n    function reserveSlot(slot) {\n      if (!slots[slot - 1]) {\n        slots[slot - 1] = true;\n        reservedBy[slot - 1] = currentUser;\n        updateAllDisplays();\n      }\n    }\n\n    function releaseSlot(slot) {\n      if (slots[slot - 1] && reservedBy[slot - 1] === currentUser) {\n        slots[slot - 1] = false;\n        reservedBy[slot - 1] = null;\n        updateAllDisplays();\n      }\n    }\n\n    function logout() {\n      currentUser = null;\n      showLogin();\n    }\n\n    window.onload = function () {\n      showLogin();\n      updateAllDisplays();\n    };\n  </script>\n</body>\n\n</html>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 600,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c5cbaeef55aa7fb3",
+        "type": "function",
+        "z": "67c505b1de210de4",
+        "name": "loginfonction",
+        "func": "// Liste des utilisateurs (simulée)\nconst users = [\n    { username: \"user1\", password: \"pass1\" },\n    { username: \"user2\", password: \"pass2\" }\n];\n\nconst username = msg.payload.username;\nconst password = msg.payload.password;\n\nconst user = users.find(u => u.username === username && u.password === password);\n\nif (user) {\n    msg.payload = { action: \"login-success\" };\n    return [msg, null]; // Envoyer à la sortie 1 (login-success)\n} else {\n    msg.payload = { action: \"login-failed\" };\n    return [null, msg]; // Envoyer à la sortie 2 (login-failed)\n}",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 80,
+        "wires": [
+            [
+                "f121e673aba16c03"
+            ],
+            [
+                "683cb18e68ba3b2d"
+            ]
+        ]
+    },
+    {
+        "id": "368f0947c1c4f63d",
+        "type": "function",
+        "z": "67c505b1de210de4",
+        "name": "signupfonction",
+        "func": "// Liste des utilisateurs (simulée)\nconst users = [];\n\nconst newUsername = msg.payload.username;\nconst newPassword = msg.payload.password;\n\nconst userExists = users.some(u => u.username === newUsername);\n\nif (userExists) {\n    msg.payload = { action: \"signup-failed\" };\n    return [null, msg]; // Envoyer à la sortie 2 (signup-failed)\n} else {\n    users.push({ username: newUsername, password: newPassword });\n    msg.payload = { action: \"signup-success\" };\n    return [msg, null]; // Envoyer à la sortie 1 (signup-success)\n}",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 160,
+        "wires": [
+            [
+                "98aadea74a8a112d"
+            ],
+            [
+                "3ce67198cf338847"
+            ]
+        ]
+    },
+    {
+        "id": "f121e673aba16c03",
+        "type": "change",
+        "z": "67c505b1de210de4",
+        "name": "loginsucc",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.action",
+                "pt": "msg",
+                "to": "login-success",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1080,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "683cb18e68ba3b2d",
+        "type": "change",
+        "z": "67c505b1de210de4",
+        "name": "loginfail",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.action",
+                "pt": "msg",
+                "to": "login-failed",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1080,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "98aadea74a8a112d",
+        "type": "change",
+        "z": "67c505b1de210de4",
+        "name": "signupsucc",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.action",
+                "pt": "msg",
+                "to": "signup-success",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1090,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3ce67198cf338847",
+        "type": "change",
+        "z": "67c505b1de210de4",
+        "name": "signupfail",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.action",
+                "pt": "msg",
+                "to": "signup-failed",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1080,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d68b72e82b5dbbf5",
+        "type": "mqtt in",
+        "z": "67c505b1de210de4",
+        "name": " mqtt in - Status",
+        "topic": "parking/status",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "64970d22e1bbf93e",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 200,
+        "y": 120,
+        "wires": [
+            [
+                "91c3aebcdd6256de",
+                "556415c1cce71746"
+            ]
+        ]
+    },
+    {
+        "id": "1e29c5b01b93dd87",
+        "type": "mqtt out",
+        "z": "67c505b1de210de4",
+        "name": "mqtt out ",
+        "topic": "",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "64970d22e1bbf93e",
+        "x": 1080,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "31a32b9eaa693d10",
+        "type": "function",
+        "z": "67c505b1de210de4",
+        "name": "reservationfonction",
+        "func": "const slot = msg.payload.slot; // Numéro du slot (1, 2 ou 3)\nconst reserve = msg.payload.reserve; // true pour réserver, false pour libérer\n\nif (slot >= 1 && slot <= 3) {\n    msg.topic = \"parking/reservation\"; // Utilisation d'un seul topic\n    msg.payload = reserve ? `reserve${slot}` : `release${slot}`;\n    return msg;\n}\nreturn null; // Ignore si le slot est invalide\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 260,
+        "wires": [
+            [
+                "1e29c5b01b93dd87",
+                "62059b7eeff90fff"
+            ]
+        ]
+    },
+    {
+        "id": "556415c1cce71746",
+        "type": "function",
+        "z": "67c505b1de210de4",
+        "name": "function 1",
+        "func": "// Récupérer la chaîne de caractères\nconst statusString = msg.payload; // \"0,0,0\"\nconst statusArray = statusString.split(','); // [\"0\", \"0\", \"0\"]\n\n// Convertir les valeurs en booleens\nmsg.payload = [\n    statusArray[0] === \"1\", // true si occupé, false si libre\n    statusArray[1] === \"1\",\n    statusArray[2] === \"1\"\n];\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 120,
+        "wires": [
+            [
+                "680f44f3086ec62a"
+            ]
+        ]
+    },
+    {
+        "id": "91c3aebcdd6256de",
+        "type": "debug",
+        "z": "67c505b1de210de4",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "62059b7eeff90fff",
+        "type": "debug",
+        "z": "67c505b1de210de4",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "e345783a28555e88",
+        "type": "ui_group",
+        "name": "Mouheb-Smart-Parking",
+        "tab": "f828f3448b22c3d4",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "64970d22e1bbf93e",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "f828f3448b22c3d4",
+        "type": "ui_tab",
+        "name": "Tab 4",
+        "icon": "dashboard",
+        "order": 4
+    }
+]
