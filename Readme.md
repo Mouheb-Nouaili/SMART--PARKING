@@ -97,4 +97,10 @@ To enhance automation, the system will integrate **ANPR (Automatic Number Plate 
 This Smart Parking system offers an efficient, automated solution for managing limited parking spaces. With real-time monitoring, online reservations, automatic payment, and future plans for license plate recognition, it enhances user convenience and optimizes parking operations. As the system evolves, it will become even smarter, faster, and more user-friendly — bringing us closer to fully automated urban parking.
 
 
+# Simulation Wokwi
 
+Vous pouvez tester la simulation ici :
+
+[Cliquez pour lancer la simulation sur Wokwi](https://wokwi.com/projects/421066939325766657)
+
+[![Wokwi Simulation](https://img.shields.io/badge/Wokwi-Lancer%20la%20simulation-green?logo=arduino)](https://wokwi.com/projects/421066939325766657)
